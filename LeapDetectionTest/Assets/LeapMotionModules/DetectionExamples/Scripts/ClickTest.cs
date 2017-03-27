@@ -7,7 +7,7 @@ namespace Leap.Unity.DetectionExamples {
 
     [Tooltip("Each pinch detector can draw one line at a time.")]
     [SerializeField]
-    private ExtendedFingerDetector[] _extendedFingerDetectors; //HERE
+    private ExtendedFingerDetector[] _extendedFingerDetectors; 
 
     [SerializeField]
     private Material _material;
@@ -71,7 +71,8 @@ namespace Leap.Unity.DetectionExamples {
         var detector = _extendedFingerDetectors[i];
         var drawState = _drawStates[i];
 
-        if (detector.IsActive) { //HERE
+        if (detector.IsActive) {
+          //Testing if clicks can be registered
           Debug.Log("Active");
           //drawState.BeginNewLine();
         }
@@ -85,6 +86,8 @@ namespace Leap.Unity.DetectionExamples {
         // }
       }
     }
+
+    //TODO REMOVE DEAD CODE
 
     private class DrawState {
       private List<Vector3> _vertices = new List<Vector3>();
