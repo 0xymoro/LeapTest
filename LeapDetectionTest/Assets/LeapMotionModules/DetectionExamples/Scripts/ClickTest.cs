@@ -7,7 +7,7 @@ namespace Leap.Unity.DetectionExamples {
 
     [Tooltip("Each pinch detector can draw one line at a time.")]
     [SerializeField]
-    private PinchDetector[] _pinchDetectors;
+    private ExtendedFingerDetector[] _extendedFingerDetectors; //HERE
 
     [SerializeField]
     private Material _material;
@@ -54,34 +54,35 @@ namespace Leap.Unity.DetectionExamples {
     }
 
     void Awake() {
-      if (_pinchDetectors.Length == 0) {
+      if (_extendedFingerDetectors.Length == 0) {
         Debug.LogWarning("No pinch detectors were specified!  PinchDraw can not draw any lines without PinchDetectors.");
       }
     }
 
     void Start() {
-      _drawStates = new DrawState[_pinchDetectors.Length];
-      for (int i = 0; i < _pinchDetectors.Length; i++) {
+      _drawStates = new DrawState[_extendedFingerDetectors.Length];
+      for (int i = 0; i < _extendedFingerDetectors.Length; i++) {
         _drawStates[i] = new DrawState(this);
       }
     }
 
     void Update() {
-      for (int i = 0; i < _pinchDetectors.Length; i++) {
-        var detector = _pinchDetectors[i];
+      for (int i = 0; i < _extendedFingerDetectors.Length; i++) {
+        var detector = _extendedFingerDetectors[i];
         var drawState = _drawStates[i];
 
-        if (detector.DidStartHold) {
-          drawState.BeginNewLine();
+        if (detector.IsActive) { //HERE
+          Debug.Log("Active");
+          //drawState.BeginNewLine();
         }
 
-        if (detector.DidRelease) {
-          drawState.FinishLine();
-        }
-
-        if (detector.IsHolding) {
-          drawState.UpdateLine(detector.Position);
-        }
+        // if (detector.DidRelease) {
+        //   drawState.FinishLine();
+        // }
+        //
+        // if (detector.IsHolding) {
+        //   drawState.UpdateLine(detector.Position);
+        // }
       }
     }
 
