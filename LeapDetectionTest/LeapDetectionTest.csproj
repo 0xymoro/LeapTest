@@ -97,6 +97,7 @@
     <Compile Include="Assets\LeapMotion\Scripts\DataStructures\RingBuffer.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DataStructures\SerializableDictionary.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\AbstractHoldDetector.cs" />
+    <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\ClickDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\Detector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\DetectorLogicGate.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\ExtendedFingerDetector.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Assets\LeapMotion\Scripts\VR\LeapVRTemporalWarping.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\VR\TemporalWarpingStatus.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\VR\VRHeightOffset.cs" />
+    <Compile Include="Assets\LeapMotionModules\DetectionExamples\Scripts\ClickTest.cs" />
     <Compile Include="Assets\LeapMotionModules\DetectionExamples\Scripts\LeapRTS.cs" />
     <Compile Include="Assets\LeapMotionModules\DetectionExamples\Scripts\MengerSponge.cs" />
     <Compile Include="Assets\LeapMotionModules\DetectionExamples\Scripts\PinchDraw.cs" />
