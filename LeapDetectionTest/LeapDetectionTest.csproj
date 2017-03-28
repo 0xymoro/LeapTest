@@ -97,6 +97,7 @@
     <Compile Include="Assets\LeapMotion\Scripts\DataStructures\RingBuffer.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DataStructures\SerializableDictionary.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\AbstractHoldDetector.cs" />
+    <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\ClickDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\Detector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\DetectorLogicGate.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\ExtendedFingerDetector.cs" />

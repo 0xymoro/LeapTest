@@ -7,8 +7,9 @@ namespace Leap.Unity.DetectionExamples {
 
     [Tooltip("Each pinch detector can draw one line at a time.")]
     [SerializeField]
-    private ExtendedFingerDetector[] _extendedFingerDetectors; 
+    private ClickDetector[] _clickDetectors;
 
+/*
     [SerializeField]
     private Material _material;
 
@@ -52,29 +53,36 @@ namespace Leap.Unity.DetectionExamples {
       _drawResolution = Mathf.Clamp(_drawResolution, 3, 24);
       _minSegmentLength = Mathf.Max(0, _minSegmentLength);
     }
-
+*/
     void Awake() {
-      if (_extendedFingerDetectors.Length == 0) {
-        Debug.LogWarning("No pinch detectors were specified!  PinchDraw can not draw any lines without PinchDetectors.");
+      if (_clickDetectors.Length == 0) {
+        Debug.LogWarning("ERROR clickDetector's length is 0.");
       }
     }
 
     void Start() {
-      _drawStates = new DrawState[_extendedFingerDetectors.Length];
-      for (int i = 0; i < _extendedFingerDetectors.Length; i++) {
+      /*
+      _drawStates = new DrawState[_clickDetectors.Length];
+      for (int i = 0; i < _clickDetectors.Length; i++) {
         _drawStates[i] = new DrawState(this);
       }
+      */
     }
 
     void Update() {
-      for (int i = 0; i < _extendedFingerDetectors.Length; i++) {
-        var detector = _extendedFingerDetectors[i];
-        var drawState = _drawStates[i];
+      for (int i = 0; i < _clickDetectors.Length; i++) {
+        var detector = _clickDetectors[i];
+        //var drawState = _drawStates[i];
 
-        if (detector.IsActive) {
+        if (detector.IsActive && !detector.getRegistered()) {
           //Testing if clicks can be registered
           Debug.Log("Active");
+          //don't log anymore if already logged
+          detector.setRegistered(true);
           //drawState.BeginNewLine();
+        }
+        else {
+
         }
 
         // if (detector.DidRelease) {
@@ -88,7 +96,7 @@ namespace Leap.Unity.DetectionExamples {
     }
 
     //TODO REMOVE DEAD CODE
-
+/*
     private class DrawState {
       private List<Vector3> _vertices = new List<Vector3>();
       private List<int> _tris = new List<int>();
@@ -265,5 +273,6 @@ namespace Leap.Unity.DetectionExamples {
         }
       }
     }
+    */
   }
 }

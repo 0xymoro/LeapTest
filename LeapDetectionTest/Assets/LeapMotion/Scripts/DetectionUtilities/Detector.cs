@@ -7,32 +7,32 @@ namespace Leap.Unity {
 
   /**
    * Base class for detectors.
-   * 
+   *
    * A Detector is an object that observes some aspect of a scene and reports true
    * when the specified conditions are met. Typically these conditions involve hand
    * information, but this is not required.
-   * 
+   *
    * Detector implementations must call Activate() when their conditions are met and
    * Deactivate() when those conditions are no longer met. Implementations should
    * also call Deactivate() when they, or the object they are a component of become disabled.
    * Implementations can call Activate() and Deactivate() more often than is strictly necessary.
    * This Detector base class keeps track of the IsActive status and only dispatches events
    * when the status changes.
-   * 
+   *
    * @since 4.1.2
    */
   public class Detector : MonoBehaviour {
-    /** The current detector state. 
-     * @since 4.1.2 
+    /** The current detector state.
+     * @since 4.1.2
      */
     public bool IsActive{ get{ return _isActive;}}
     private bool _isActive = false;
-    /** Dispatched when the detector activates (becomes true). 
+    /** Dispatched when the detector activates (becomes true).
      * @since 4.1.2
      */
     [Tooltip("Dispatched when condition is detected.")]
     public UnityEvent OnActivate;
-    /** Dispatched when the detector deactivates (becomes false). 
+    /** Dispatched when the detector deactivates (becomes false).
      * @since 4.1.2
      */
     [Tooltip("Dispatched when condition is no longer detected.")]
