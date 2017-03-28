@@ -76,7 +76,7 @@ namespace Leap.Unity.DetectionExamples {
 
         if (detector.IsActive && !detector.getRegistered()) {
           //Testing if clicks can be registered
-          Debug.Log("Active");
+          Debug.Log(i + " " + detector.getFingerClicked());
           //don't log anymore if already logged
           detector.setRegistered(true);
           //drawState.BeginNewLine();

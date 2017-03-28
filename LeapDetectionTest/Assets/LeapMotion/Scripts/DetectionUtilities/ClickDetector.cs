@@ -80,6 +80,15 @@ namespace Leap.Unity {
 			return registered;
 		}
 
+		//knows which finger clicked
+		private int fingerClicked = -1;
+		public void setFingerClicked(int newVal){
+			fingerClicked = newVal;
+		}
+		public int getFingerClicked(){
+			return fingerClicked;
+		}
+
     private IEnumerator watcherCoroutine;
 
     void OnValidate() {
@@ -135,6 +144,9 @@ namespace Leap.Unity {
               if (hand.Fingers[f].IsExtended) {
                 extendedCount++;
               }
+							else{ //not extended, meaning clicked
+								fingerClicked = f;
+							}
             }
             fingerState = fingerState &&
                          (extendedCount <= MaximumExtendedCount) &&
@@ -142,6 +154,7 @@ namespace Leap.Unity {
             if(HandModel.IsTracked && fingerState){
               Activate();
 							//set the registered to false for first signal of input
+							//so as to not set it again while click is held
 							if (this.getIsHolding() == false){
 								this.setIsHolding(true);
 								this.setRegistered(false);
