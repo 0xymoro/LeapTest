@@ -11,6 +11,20 @@ namespace Leap.Unity {
    * @since 4.1.2
    */
   public class ClickDetector : Detector {
+
+		//Threshold for what constitutes a click vs a release
+		[Tooltip("Angle that once passed, is regarded as a click")]
+		[Units("radians")]
+		[MinValue(0)]
+		public double ClickThreshold = Math.PI*2/5;
+
+		//Threshold for what constitutes a release after click
+		[Tooltip("Angle that once passed, is regarded as a release")]
+		[Units("radians")]
+		[MinValue(0)]
+		public double ReleaseThreshold = Math.PI*1/5;
+
+
     /**
      * The interval at which to check finger state.
      * @since 4.1.2
@@ -29,22 +43,6 @@ namespace Leap.Unity {
     [Tooltip("The hand model to watch. Set automatically if detector is on a hand.")]
     public IHandModel HandModel = null;
 
-    /** The required thumb state. */
-    [Header("Finger States")]
-    [Tooltip("Required state of the thumb.")]
-    public PointingState Thumb = PointingState.Either;
-    /** The required index finger state. */
-    [Tooltip("Required state of the index finger.")]
-    public PointingState Index = PointingState.Either;
-    /** The required middle finger state. */
-    [Tooltip("Required state of the middle finger.")]
-    public PointingState Middle = PointingState.Either;
-    /** The required ring finger state. */
-    [Tooltip("Required state of the ring finger.")]
-    public PointingState Ring = PointingState.Either;
-    /** The required pinky finger state. */
-    [Tooltip("Required state of the little finger.")]
-    public PointingState Pinky = PointingState.Either;
 
     /** How many fingers must be extended for the detector to activate. */
     [Header("Min and Max Finger Counts")]
@@ -55,12 +53,7 @@ namespace Leap.Unity {
     [Range(0, 5)]
     [Tooltip("The maximum number of fingers extended.")]
     public int MaximumExtendedCount = 5;
-    /** Whether to draw the detector's Gizmos for debugging. (Not every detector provides gizmos.)
-     * @since 4.1.2
-     */
-    [Header("")]
-    [Tooltip("Draw this detector's Gizmos, if any. (Gizmos must be on in Unity edtor, too.)")]
-    public bool ShowGizmos = true;
+
 
 		//Tells if finger is held
 		private bool isHolding = false;
@@ -89,29 +82,12 @@ namespace Leap.Unity {
 			return fingerClicked;
 		}
 
+		//keeps track of whether finger is clicked or not
+		private bool[] fingersClicked = {false, false, false, false, false};
+
+
     private IEnumerator watcherCoroutine;
 
-    void OnValidate() {
-      int required = 0, forbidden = 0;
-      PointingState[] stateArray = { Thumb, Index, Middle, Ring, Pinky };
-      for(int i=0; i<stateArray.Length; i++) {
-        var state = stateArray[i];
-        switch (state) {
-          case PointingState.Extended:
-            required++;
-            break;
-          case PointingState.NotExtended:
-            forbidden++;
-            break;
-          default:
-            break;
-        }
-        MinimumExtendedCount = Math.Max(required, MinimumExtendedCount);
-        MaximumExtendedCount = Math.Min(5 - forbidden, MaximumExtendedCount);
-        MaximumExtendedCount = Math.Max(required, MaximumExtendedCount);
-      }
-
-    }
 
     void Awake () {
       watcherCoroutine = extendedFingerWatcher();
@@ -133,24 +109,21 @@ namespace Leap.Unity {
         if(HandModel != null && HandModel.IsTracked){
           hand = HandModel.GetLeapHand();
           if(hand != null){
-            fingerState = matchFingerState(hand.Fingers[0], Thumb)
-              && matchFingerState(hand.Fingers[1], Index)
-              && matchFingerState(hand.Fingers[2], Middle)
-              && matchFingerState(hand.Fingers[3], Ring)
-              && matchFingerState(hand.Fingers[4], Pinky);
+
+						//update all arrays on new hand position
+						updateFingersClicked(hand);
 
             int extendedCount = 0;
             for (int f = 0; f < 5; f++) {
-              if (hand.Fingers[f].IsExtended) {
+              if (!this.fingersClicked[f]) { //if is not clicked
                 extendedCount++;
               }
 							else{ //not extended, meaning clicked
 								fingerClicked = f;
 							}
             }
-            fingerState = fingerState &&
-                         (extendedCount <= MaximumExtendedCount) &&
-                         (extendedCount >= MinimumExtendedCount);
+            fingerState = (extendedCount <= MaximumExtendedCount) &&
+                          (extendedCount >= MinimumExtendedCount);
             if(HandModel.IsTracked && fingerState){
               Activate();
 							//set the registered to false for first signal of input
@@ -172,36 +145,29 @@ namespace Leap.Unity {
       }
     }
 
-    private bool matchFingerState (Finger finger, PointingState requiredState) {
-      return (requiredState == PointingState.Either) ||
-             (requiredState == PointingState.Extended && finger.IsExtended) ||
-             (requiredState == PointingState.NotExtended && !finger.IsExtended);
-    }
+		private void updateFingersClicked(Hand hand){
 
-    #if UNITY_EDITOR
-    void OnDrawGizmos () {
-      if (ShowGizmos && HandModel != null && HandModel.IsTracked) {
-        PointingState[] state = { Thumb, Index, Middle, Ring, Pinky };
-        Hand hand = HandModel.GetLeapHand();
-        int extendedCount = 0;
-        int notExtendedCount = 0;
-        for (int f = 0; f < 5; f++) {
-          Finger finger = hand.Fingers[f];
-          if (finger.IsExtended) extendedCount++;
-          else notExtendedCount++;
-          if (matchFingerState(finger, state[f]) &&
-             (extendedCount <= MaximumExtendedCount) &&
-             (extendedCount >= MinimumExtendedCount)) {
-            Gizmos.color = OnColor;
-          } else {
-            Gizmos.color = OffColor;
-          }
-          Gizmos.DrawWireSphere(finger.TipPosition.ToVector3(), finger.Width);
-        }
-      }
-    }
-    #endif
+			//TODO thumb special case due to differing anatomy in clicking than other 4
+
+
+			for (int i = 1; i < 5; i++){ //for 4 fingers other than thumb
+				double angleDifference = hand.Fingers[i].Direction.AngleTo(hand.Direction);
+				if (this.fingersClicked[i]){ //if is clicked, check for release
+					if (angleDifference < ReleaseThreshold){
+						this.fingersClicked[i] = false;
+					}
+				}
+				else{ //if not clicked, check for click
+					if (angleDifference > ClickThreshold){
+						this.fingersClicked[i] = true;
+					}
+				}
+			}
+		}
+
+
   }
+
 
   /** Defines the settings for comparing extended finger states */
 	//No need due to definition in ExtendedFingerDetector, TODO add this
