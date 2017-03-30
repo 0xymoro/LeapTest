@@ -16,14 +16,26 @@ namespace Leap.Unity {
 		[Tooltip("Angle that once passed, is regarded as a click")]
 		[Units("radians")]
 		[MinValue(0)]
-		public double ClickThreshold = Math.PI*2/5;
+		public double ClickThreshold = 1.4;
 
 		//Threshold for what constitutes a release after click
 		[Tooltip("Angle that once passed, is regarded as a release")]
 		[Units("radians")]
 		[MinValue(0)]
-		public double ReleaseThreshold = Math.PI*1/5;
+		public double ReleaseThreshold = 1;
 
+
+    //Threshold for what constitutes a click vs a release for thumb
+		[Tooltip("Thumb: Angle that once passed, is regarded as a click")]
+		[Units("radians")]
+		[MinValue(0)]
+		public double ThumbClickThreshold = 0.65;
+
+		//Threshold for what constitutes a release after click for thumb
+		[Tooltip("Thumb: Angle that once passed, is regarded as a release")]
+		[Units("radians")]
+		[MinValue(0)]
+		public double ThumbReleaseThreshold = 0.45;
 
     /**
      * The interval at which to check finger state.
@@ -109,7 +121,7 @@ namespace Leap.Unity {
         if(HandModel != null && HandModel.IsTracked){
           hand = HandModel.GetLeapHand();
           if(hand != null){
-
+            //Debug.Log(hand.Fingers[0].Direction.AngleTo(hand.Direction));
 						//update all arrays on new hand position
 						updateFingersClicked(hand);
 
@@ -147,7 +159,16 @@ namespace Leap.Unity {
 
 		private void updateFingersClicked(Hand hand){
 
-			//TODO thumb special case due to differing anatomy in clicking than other 4
+			//thumb special case due to differing anatomy in clicking than other 4
+      double thumbAngleDifference = hand.Fingers[0].Direction.AngleTo(hand.Direction);
+      if (this.fingersClicked[0]){
+        if (thumbAngleDifference < ThumbReleaseThreshold){
+          this.fingersClicked[0] = false;
+        }
+      }
+      else if (thumbAngleDifference > ThumbClickThreshold){
+        this.fingersClicked[0] = true;
+      }
 
 
 			for (int i = 1; i < 5; i++){ //for 4 fingers other than thumb
@@ -157,10 +178,8 @@ namespace Leap.Unity {
 						this.fingersClicked[i] = false;
 					}
 				}
-				else{ //if not clicked, check for click
-					if (angleDifference > ClickThreshold){
-						this.fingersClicked[i] = true;
-					}
+				else if (angleDifference > ClickThreshold){
+					this.fingersClicked[i] = true;
 				}
 			}
 		}
