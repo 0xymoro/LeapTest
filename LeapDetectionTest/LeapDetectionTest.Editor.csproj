@@ -138,6 +138,15 @@
     <Compile Include="Assets\LeapMotion\Scripts\DataStructures\Editor\Tests\RingBufferTest.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\VR\Editor\EyeTypeEditor.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\VR\Editor\LeapTemporalWarpingEditor.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\InteractionBehaviourBaseEditor.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\InteractionManagerEditor.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\InteractionMaterialEditor.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\SingleLayerEditor.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\Tests\BaseCallGuardTest.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\Tests\InteractionCTest.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\Tests\KabschTest.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\Tests\ShapePoolTest.cs" />
+    <Compile Include="Assets\LeapMotionModules\InteractionEngine\Scripts\Editor\Tests\StructAllocatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\LeapMotion\Dependencies.txt" />

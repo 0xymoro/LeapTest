@@ -33,5 +33,10 @@ namespace Leap.Unity.DetectionExamples {
         }
       }
     }
+
+    void OnCollisionEnter(Collision other) {
+
+      Debug.Log ("Collision Event " + other.transform.name);
+    }
   }
 }
