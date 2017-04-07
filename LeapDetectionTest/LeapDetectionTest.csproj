@@ -78,7 +78,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\ExternalScripts\BallCollisionTest.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\Algorithms\SlidingMax.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\Algorithms\SmoothedFloat.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\Algorithms\SmoothedQuaternion.cs" />
@@ -106,6 +105,8 @@
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\PalmDirectionDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\PinchDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\ProximityDetector.cs" />
+    <Compile Include="Assets\LeapMotion\Scripts\ExternalScripts\BallCollisionTest.cs" />
+    <Compile Include="Assets\LeapMotion\Scripts\ExternalScripts\KeyCollisionDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\HandFactory.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\HandPool.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\HandProxy.cs" />
