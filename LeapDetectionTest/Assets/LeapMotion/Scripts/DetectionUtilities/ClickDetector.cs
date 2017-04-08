@@ -131,7 +131,7 @@ namespace Leap.Unity {
                 extendedCount++;
               }
 							else{ //not extended, meaning clicked
-								fingerClicked = f;
+								this.setFingerClicked(f);
 							}
             }
             fingerState = (extendedCount <= MaximumExtendedCount) &&
@@ -147,11 +147,13 @@ namespace Leap.Unity {
             } else if(!HandModel.IsTracked || !fingerState) {
               Deactivate();
 							this.setIsHolding(false);
+              this.setFingerClicked(-1);
             }
           }
         } else if(IsActive){
           Deactivate();
 					this.setIsHolding(false);
+          this.setFingerClicked(-1);
         }
         yield return new WaitForSeconds(Period);
       }

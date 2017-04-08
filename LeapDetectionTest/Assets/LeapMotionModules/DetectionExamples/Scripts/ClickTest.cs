@@ -26,17 +26,12 @@ namespace Leap.Unity.DetectionExamples {
 
         if (detector.IsActive && !detector.getRegistered()) {
           //Testing if clicks can be registered
-          Debug.Log(i + " " + detector.getFingerClicked());
+          //Debug.Log(i + " " + detector.getFingerClicked());
           //don't log anymore if already logged
           detector.setRegistered(true);
           //drawState.BeginNewLine();
         }
       }
-    }
-
-    void OnCollisionEnter(Collision other) {
-
-      Debug.Log ("Collision Event " + other.transform.name);
     }
   }
 }

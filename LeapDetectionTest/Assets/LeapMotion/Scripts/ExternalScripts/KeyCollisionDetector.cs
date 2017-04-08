@@ -6,6 +6,19 @@ using Leap.Unity.Attributes;
 namespace Leap.Unity {
 
 	public class KeyCollisionDetector : MonoBehaviour {
+		[Tooltip("The value associated with the key")]
+		public string KeyValue = " ";
+
+
+
+		private ClickDetector leftClickDetector;
+		private ClickDetector rightClickDetector;
+
+		void Awake (){
+			//BE VERY SPECIFIC WITH THE PATH HERE!!!
+			leftClickDetector = GameObject.Find("/LMHeadMountedRig/HandModels/CapsuleHand_L/LeftDetector").GetComponent<ClickDetector>();
+			rightClickDetector = GameObject.Find("/LMHeadMountedRig/HandModels/CapsuleHand_R/RightDetector").GetComponent<ClickDetector>();
+		}
 
 		// Use this for initialization
 		void Start () {
@@ -66,7 +79,22 @@ namespace Leap.Unity {
 				//Debug.Log(fingerID);
 				int handID = whichHand(collisionObject);
 				//Debug.Log(handID);
-
+				if (handID == 0){
+					//left hand clicked
+					if (leftClickDetector.getFingerClicked() == fingerID &&
+							leftClickDetector.getRegistered() == false){
+						Debug.Log(KeyValue);
+						leftClickDetector.setRegistered(true);
+					}
+				}
+				else{
+					//right hand clicked
+					if (rightClickDetector.getFingerClicked() == fingerID &&
+							rightClickDetector.getRegistered() == false){
+						Debug.Log(KeyValue);
+						rightClickDetector.setRegistered(true);
+					}
+				}
 				//Debug.Log(collisionObject.transform.parent);
 			}
 
