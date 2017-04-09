@@ -16,26 +16,26 @@ namespace Leap.Unity {
 		[Tooltip("Angle that once passed, is regarded as a click")]
 		[Units("radians")]
 		[MinValue(0)]
-		public double ClickThreshold = 1.4;
+		public double ClickThreshold = 0.6;
 
 		//Threshold for what constitutes a release after click
 		[Tooltip("Angle that once passed, is regarded as a release")]
 		[Units("radians")]
 		[MinValue(0)]
-		public double ReleaseThreshold = 1;
+		public double ReleaseThreshold = 0.9;
 
 
-    //Threshold for what constitutes a click vs a release for thumb
-		[Tooltip("Thumb: Angle that once passed, is regarded as a click")]
-		[Units("radians")]
-		[MinValue(0)]
-		public double ThumbClickThreshold = 0.65;
+     //Threshold for what constitutes a click vs a release for thumb
+		 [Tooltip("Thumb: Angle that once passed, is regarded as a click")]
+		 [Units("radians")]
+		 [MinValue(0)]
+		 public double ThumbClickThreshold = 1.1;
 
-		//Threshold for what constitutes a release after click for thumb
-		[Tooltip("Thumb: Angle that once passed, is regarded as a release")]
-		[Units("radians")]
-		[MinValue(0)]
-		public double ThumbReleaseThreshold = 0.45;
+		 //Threshold for what constitutes a release after click for thumb
+		 [Tooltip("Thumb: Angle that once passed, is regarded as a release")]
+		 [Units("radians")]
+		 [MinValue(0)]
+		 public double ThumbReleaseThreshold = 1.3;
 
     /**
      * The interval at which to check finger state.
@@ -121,7 +121,6 @@ namespace Leap.Unity {
         if(HandModel != null && HandModel.IsTracked){
           hand = HandModel.GetLeapHand();
           if(hand != null){
-            //Debug.Log(hand.Fingers[0].Direction.AngleTo(hand.Direction));
 						//update all arrays on new hand position
 						updateFingersClicked(hand);
 
@@ -161,26 +160,28 @@ namespace Leap.Unity {
 
 		private void updateFingersClicked(Hand hand){
 
+
 			//thumb special case due to differing anatomy in clicking than other 4
-      double thumbAngleDifference = hand.Fingers[0].Direction.AngleTo(hand.Direction);
+      double thumbAngleDifference = hand.Fingers[0].Direction.AngleTo(hand.PalmNormal);
       if (this.fingersClicked[0]){
-        if (thumbAngleDifference < ThumbReleaseThreshold){
-          this.fingersClicked[0] = false;
+        if (thumbAngleDifference > ThumbReleaseThreshold){
+           this.fingersClicked[0] = false;
         }
       }
-      else if (thumbAngleDifference > ThumbClickThreshold){
+      else if (thumbAngleDifference < ThumbClickThreshold){
         this.fingersClicked[0] = true;
       }
 
 
 			for (int i = 1; i < 5; i++){ //for 4 fingers other than thumb
-				double angleDifference = hand.Fingers[i].Direction.AngleTo(hand.Direction);
+				double angleDifference = hand.Fingers[i].Direction.AngleTo(hand.PalmNormal);
+        //Debug.Log(angleDifference);
 				if (this.fingersClicked[i]){ //if is clicked, check for release
-					if (angleDifference < ReleaseThreshold){
+					if (angleDifference > ReleaseThreshold){
 						this.fingersClicked[i] = false;
 					}
 				}
-				else if (angleDifference > ClickThreshold){
+				else if (angleDifference < ClickThreshold){
 					this.fingersClicked[i] = true;
 				}
 			}

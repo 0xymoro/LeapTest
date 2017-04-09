@@ -5,7 +5,7 @@ namespace Leap.Unity.DetectionExamples {
 
   public class ClickTest : MonoBehaviour {
 
-    [Tooltip("Each pinch detector can draw one line at a time.")]
+    [Tooltip("ClickDetectors to be attached")]
     [SerializeField]
     private ClickDetector[] _clickDetectors;
 
@@ -28,7 +28,7 @@ namespace Leap.Unity.DetectionExamples {
           //Testing if clicks can be registered
           //Debug.Log(i + " " + detector.getFingerClicked());
           //don't log anymore if already logged
-          detector.setRegistered(true);
+          //detector.setRegistered(true);
           //drawState.BeginNewLine();
         }
       }

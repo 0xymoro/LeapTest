@@ -76,9 +76,8 @@ namespace Leap.Unity {
 			Collider collisionObject = other.gameObject.GetComponent<Collider>();
 			if (IsHand(collisionObject)){
 				int fingerID = whichFinger(collisionObject);
-				//Debug.Log(fingerID);
 				int handID = whichHand(collisionObject);
-				//Debug.Log(handID);
+
 				if (handID == 0){
 					//left hand clicked
 					if (leftClickDetector.getFingerClicked() == fingerID &&
@@ -95,16 +94,7 @@ namespace Leap.Unity {
 						rightClickDetector.setRegistered(true);
 					}
 				}
-				//Debug.Log(collisionObject.transform.parent);
 			}
-
-			//Debug.Log("here");
-			//Debug.Log(gameObject);
-			//Debug.Log(other);
-			// if (IsHand(other))
-			// {
-			//   Debug.Log("Yay! A hand collided!");
-			// }
 		}
 	}
 }
