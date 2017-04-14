@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 using Leap.Unity.Attributes;
+using UnityEngine.UI;
 
 namespace Leap.Unity {
 
@@ -9,10 +10,13 @@ namespace Leap.Unity {
 		[Tooltip("The value associated with the key")]
 		public string KeyValue = " ";
 
+		[Tooltip("Drag the display text to here")]
+		public Text OutputTextField;
 
 
 		private ClickDetector leftClickDetector;
 		private ClickDetector rightClickDetector;
+
 
 		void Awake (){
 			//BE VERY SPECIFIC WITH THE PATH HERE!!!
@@ -82,6 +86,7 @@ namespace Leap.Unity {
 					//left hand clicked
 					if (leftClickDetector.getFingerClicked() == fingerID &&
 							leftClickDetector.getRegistered() == false){
+						outputText(KeyValue); //TODO
 						Debug.Log(KeyValue);
 						leftClickDetector.setRegistered(true);
 					}
@@ -90,11 +95,17 @@ namespace Leap.Unity {
 					//right hand clicked
 					if (rightClickDetector.getFingerClicked() == fingerID &&
 							rightClickDetector.getRegistered() == false){
-						Debug.Log(KeyValue);
+						outputText(KeyValue); //TODO
 						rightClickDetector.setRegistered(true);
 					}
 				}
 			}
 		}
+
+		//outputs the character/string to the text shown to user
+		void outputText(string keyValue){
+			OutputTextField.text += keyValue;
+		}
+
 	}
 }
