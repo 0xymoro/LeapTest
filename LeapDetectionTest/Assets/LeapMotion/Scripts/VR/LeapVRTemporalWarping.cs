@@ -245,7 +245,14 @@ namespace Leap.Unity {
       }
     }
 
-    private IEnumerator waitForConnection() {
+    //EDITED CODE 
+    protected void Awake()
+    {
+        InputTracking.Recenter();
+    }
+    //END EDIT
+
+        private IEnumerator waitForConnection() {
       while (!provider.IsConnected()) {
         yield return null;
       }

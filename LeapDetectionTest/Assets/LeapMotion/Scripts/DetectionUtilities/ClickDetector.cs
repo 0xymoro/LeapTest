@@ -8,7 +8,6 @@ namespace Leap.Unity {
   /**
 	 * Detects clicks (curled fingers)
    *
-   * @since 4.1.2
    */
   public class ClickDetector : Detector {
 

@@ -87,7 +87,7 @@ namespace Leap.Unity {
 					if (leftClickDetector.getFingerClicked() == fingerID &&
 							leftClickDetector.getRegistered() == false){
 						outputText(KeyValue); //TODO
-						Debug.Log(KeyValue);
+						//Debug.Log(KeyValue);
 						leftClickDetector.setRegistered(true);
 					}
 				}
