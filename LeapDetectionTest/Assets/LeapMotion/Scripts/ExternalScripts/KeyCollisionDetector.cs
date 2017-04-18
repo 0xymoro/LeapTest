@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using System;
 using Leap.Unity.Attributes;
-using UnityEngine.UI;
 
 namespace Leap.Unity {
 
@@ -11,7 +10,9 @@ namespace Leap.Unity {
 		public string KeyValue = " ";
 
 		[Tooltip("Drag the display text to here")]
-		public Text OutputTextField;
+		public TextMesh OutputTextMesh;
+		private int textLength = 0;
+		private static int NEWLINE_THRESHOLD = 30;
 
 
 		private ClickDetector leftClickDetector;
@@ -104,7 +105,12 @@ namespace Leap.Unity {
 
 		//outputs the character/string to the text shown to user
 		void outputText(string keyValue){
-			OutputTextField.text += keyValue;
+			if (textLength >= NEWLINE_THRESHOLD){
+				textLength = 0;
+				OutputTextMesh.text += "\n";
+			}
+			OutputTextMesh.text += keyValue;
+			textLength ++;
 		}
 
 	}
