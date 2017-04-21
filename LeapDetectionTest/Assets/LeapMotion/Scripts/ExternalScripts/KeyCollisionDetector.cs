@@ -9,6 +9,9 @@ namespace Leap.Unity {
 		[Tooltip("The value associated with the key")]
 		public string KeyValue = " ";
 
+		[Tooltip("The value associated with the key's shift")]
+		public string KeyShiftValue = "";
+
 		[Tooltip("Drag the display text to here")]
 		public TextMesh OutputTextMesh;
 		private int textLength = 0;
@@ -42,6 +45,11 @@ namespace Leap.Unity {
 		    return true;
 		  else
 		    return false;
+		}
+
+		private bool IsFingerTip(Collider other)
+		{
+			return other.transform.name == "bone3";
 		}
 
 		private int whichFinger(Collider hand){
@@ -79,7 +87,7 @@ namespace Leap.Unity {
 		//be touching the key in order to find the one that's bent (clicked)
 		void OnCollisionStay(Collision other){
 			Collider collisionObject = other.gameObject.GetComponent<Collider>();
-			if (IsHand(collisionObject)){
+			if (IsHand(collisionObject) && IsFingerTip(collisionObject)){
 				int fingerID = whichFinger(collisionObject);
 				int handID = whichHand(collisionObject);
 
@@ -87,7 +95,7 @@ namespace Leap.Unity {
 					//left hand clicked
 					if (leftClickDetector.getFingerClicked() == fingerID &&
 							leftClickDetector.getRegistered() == false){
-						outputText(KeyValue); //TODO
+						outputText(KeyValue);
 						//Debug.Log(KeyValue);
 						leftClickDetector.setRegistered(true);
 					}
@@ -96,7 +104,7 @@ namespace Leap.Unity {
 					//right hand clicked
 					if (rightClickDetector.getFingerClicked() == fingerID &&
 							rightClickDetector.getRegistered() == false){
-						outputText(KeyValue); //TODO
+						outputText(KeyValue);
 						rightClickDetector.setRegistered(true);
 					}
 				}
