@@ -14,18 +14,29 @@ namespace Leap.Unity {
 
 		[Tooltip("Drag the display text to here")]
 		public TextMesh OutputTextMesh;
-		private int textLength = 0;
-		private static int NEWLINE_THRESHOLD = 30;
 
+		public bool isNormalKey = true;
+		public bool isCapsKey = false;
+		public bool isShiftKey = false;
+		public bool isEnterKey = false;
+		public bool isDeleteKey = false;
+
+
+		private int textLength = 0;
+		private static int NEWLINE_THRESHOLD = 15;
 
 		private ClickDetector leftClickDetector;
 		private ClickDetector rightClickDetector;
+
+		private KeyCollisionDetectorController controller;
+
 
 
 		void Awake (){
 			//BE VERY SPECIFIC WITH THE PATH HERE!!!
 			leftClickDetector = GameObject.Find("/LMHeadMountedRig/HandModels/CapsuleHand_L/LeftDetector").GetComponent<ClickDetector>();
 			rightClickDetector = GameObject.Find("/LMHeadMountedRig/HandModels/CapsuleHand_R/RightDetector").GetComponent<ClickDetector>();
+			controller = GameObject.Find("/KeysController").GetComponent<KeyCollisionDetectorController>();
 		}
 
 		// Use this for initialization
@@ -95,8 +106,7 @@ namespace Leap.Unity {
 					//left hand clicked
 					if (leftClickDetector.getFingerClicked() == fingerID &&
 							leftClickDetector.getRegistered() == false){
-						outputText(KeyValue);
-						//Debug.Log(KeyValue);
+						registerKey();
 						leftClickDetector.setRegistered(true);
 					}
 				}
@@ -104,20 +114,48 @@ namespace Leap.Unity {
 					//right hand clicked
 					if (rightClickDetector.getFingerClicked() == fingerID &&
 							rightClickDetector.getRegistered() == false){
-						outputText(KeyValue);
+						registerKey();
 						rightClickDetector.setRegistered(true);
 					}
 				}
 			}
 		}
 
-		//outputs the character/string to the text shown to user
-		void outputText(string keyValue){
-			if (textLength >= NEWLINE_THRESHOLD){
+		void registerKey(){
+			if (isNormalKey){
+				outputText();
+			}
+			else if (isCapsKey){
+				controller.setCaps(!controller.getCaps());
+			}
+			else if (isShiftKey){
+				controller.setShift(!controller.getShift());
+			}
+			else if (isEnterKey){
 				textLength = 0;
 				OutputTextMesh.text += "\n";
 			}
-			OutputTextMesh.text += keyValue;
+			else if (isDeleteKey){
+				string temp = OutputTextMesh.text;
+				OutputTextMesh.text = temp.Substring(0, temp.Length - 1);
+			}
+		}
+
+		//outputs the character/string to the text shown to user
+		void outputText(){
+			if (textLength >= NEWLINE_THRESHOLD){ //automatic enter over threshold
+				textLength = 0;
+				OutputTextMesh.text += "\n";
+			}
+			if (controller.getCaps() || controller.getShift()){
+				OutputTextMesh.text += KeyShiftValue;
+				if (controller.getShift()){
+					controller.setShift(false);
+				}
+			}
+			else{
+				OutputTextMesh.text += KeyValue;
+			}
 			textLength ++;
 		}
 
