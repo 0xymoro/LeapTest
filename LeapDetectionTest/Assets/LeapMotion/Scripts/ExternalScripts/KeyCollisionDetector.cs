@@ -6,14 +6,17 @@ using Leap.Unity.Attributes;
 namespace Leap.Unity {
 
 	public class KeyCollisionDetector : MonoBehaviour {
+		[Tooltip("Key's ID")]
+		public int KeyID = 0;
+
 		[Tooltip("The value associated with the key")]
-		public string KeyValue = " ";
+		public string KeyValue = "";
 
 		[Tooltip("The value associated with the key's shift")]
 		public string KeyShiftValue = "";
 
-		[Tooltip("Drag the display text to here")]
-		public TextMesh OutputTextMesh;
+		[Tooltip("Delay of input after each key is pressed")]
+		public float KeyDelay = 0.2f;
 
 		public bool isNormalKey = true;
 		public bool isCapsKey = false;
@@ -22,20 +25,12 @@ namespace Leap.Unity {
 		public bool isDeleteKey = false;
 
 
-		private int textLength = 0;
-		private static int NEWLINE_THRESHOLD = 15;
-
-		private ClickDetector leftClickDetector;
-		private ClickDetector rightClickDetector;
-
 		private KeyCollisionDetectorController controller;
 
 
 
 		void Awake (){
 			//BE VERY SPECIFIC WITH THE PATH HERE!!!
-			leftClickDetector = GameObject.Find("/LMHeadMountedRig/HandModels/CapsuleHand_L/LeftDetector").GetComponent<ClickDetector>();
-			rightClickDetector = GameObject.Find("/LMHeadMountedRig/HandModels/CapsuleHand_R/RightDetector").GetComponent<ClickDetector>();
 			controller = GameObject.Find("/KeysController").GetComponent<KeyCollisionDetectorController>();
 		}
 
@@ -63,67 +58,35 @@ namespace Leap.Unity {
 			return other.transform.name == "bone3";
 		}
 
-		private int whichFinger(Collider hand){
-			string fingerName = hand.transform.parent.name;
-			if (fingerName == "thumb"){
-				return 0;
-			}
-			else if (fingerName == "index"){
-				return 1;
-			}
-			else if (fingerName == "middle"){
-				return 2;
-			}
-			else if (fingerName == "ring"){
-				return 3;
-			}
-			else if (fingerName == "pinky"){
-				return 4;
-			}
-			else return -1;
-		}
-
-		private int whichHand(Collider hand){
-			string handName = hand.transform.parent.parent.name;
-			if (handName == "RigidRoundHand_L(Clone)"){
-				return 0; //left hand
-			}
-			else if (handName == "RigidRoundHand_R(Clone)"){
-				return 1; //right hand
-			}
-			return -1;
-		}
 
 		//OnCollisionStay as it needs to keep track of all fingers that might
 		//be touching the key in order to find the one that's bent (clicked)
-		void OnCollisionStay(Collision other){
+		void OnCollisionEnter(Collision other){
 			Collider collisionObject = other.gameObject.GetComponent<Collider>();
-			if (IsHand(collisionObject) && IsFingerTip(collisionObject)){
-				int fingerID = whichFinger(collisionObject);
-				int handID = whichHand(collisionObject);
-
-				if (handID == 0){
-					//left hand clicked
-					if (leftClickDetector.getFingerClicked() == fingerID &&
-							leftClickDetector.getRegistered() == false){
-						registerKey();
-						leftClickDetector.setRegistered(true);
-					}
-				}
-				else{
-					//right hand clicked
-					if (rightClickDetector.getFingerClicked() == fingerID &&
-							rightClickDetector.getRegistered() == false){
-						registerKey();
-						rightClickDetector.setRegistered(true);
-					}
-				}
+			if (IsHand(collisionObject) && IsFingerTip(collisionObject) &&
+			    !controller.getActive()){
+				registerKey();
+				controller.activate();
+				StartCoroutine(DeactivateAfterDelay());
 			}
+		}
+
+/*
+		//unclickable period to have more precise clicking
+		void OnCollisionExit(Collision other){
+			if (KeyID == controller.getActiveID()){
+				StartCoroutine(DeactivateAfterDelay());
+			}
+		}
+*/
+		IEnumerator DeactivateAfterDelay(){
+			yield return new WaitForSeconds(KeyDelay);
+			controller.deactivate();
 		}
 
 		void registerKey(){
 			if (isNormalKey){
-				outputText();
+				controller.outputText(KeyValue, KeyShiftValue);
 			}
 			else if (isCapsKey){
 				controller.setCaps(!controller.getCaps());
@@ -132,32 +95,13 @@ namespace Leap.Unity {
 				controller.setShift(!controller.getShift());
 			}
 			else if (isEnterKey){
-				textLength = 0;
-				OutputTextMesh.text += "\n";
+				controller.enterKey();
 			}
 			else if (isDeleteKey){
-				string temp = OutputTextMesh.text;
-				OutputTextMesh.text = temp.Substring(0, temp.Length - 1);
+				controller.deleteKey();
 			}
 		}
 
-		//outputs the character/string to the text shown to user
-		void outputText(){
-			if (textLength >= NEWLINE_THRESHOLD){ //automatic enter over threshold
-				textLength = 0;
-				OutputTextMesh.text += "\n";
-			}
-			if (controller.getCaps() || controller.getShift()){
-				OutputTextMesh.text += KeyShiftValue;
-				if (controller.getShift()){
-					controller.setShift(false);
-				}
-			}
-			else{
-				OutputTextMesh.text += KeyValue;
-			}
-			textLength ++;
-		}
 
 	}
 }

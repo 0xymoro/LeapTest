@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/LeapMotionModules/DetectionExamples/Scenes/PinchDrawDemo.unity
+- path: Assets/KeyboardScene.unity
   isLoaded: 1
   isActive: 1
