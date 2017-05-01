@@ -60,15 +60,17 @@ namespace Leap.Unity {
 				}
 			}
 			else{
+/*
 				if(KeyValue == " "){
 					String[] spl= OutputTextMesh.text.Split(' '); //splits output string by spaces
 					OutputTextMesh.text = OutputTextMesh.text.Substring(0, OutputTextMesh.text.Length - spl[spl.Length - 1].Length); //eliminates last word
-					Debug.Log(OutputTextMesh.text);
+					//Debug.Log(OutputTextMesh.text);
 					OutputTextMesh.text += spelling.Correct(spl[spl.Length - 1]); //adds in corrected last word
 					OutputTextMesh.text += KeyValue; //add in space
 				}else{
-					OutputTextMesh.text += KeyValue;
-				}
+				*/
+				OutputTextMesh.text += KeyValue;
+				//}
 
 			}
 			textLength ++;

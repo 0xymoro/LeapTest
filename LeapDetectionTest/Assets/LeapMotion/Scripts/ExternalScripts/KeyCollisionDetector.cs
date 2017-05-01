@@ -6,8 +6,8 @@ using Leap.Unity.Attributes;
 namespace Leap.Unity {
 
 	public class KeyCollisionDetector : MonoBehaviour {
-		[Tooltip("Key's ID")]
-		public int KeyID = 0;
+		// [Tooltip("Key's ID")]
+		// public int KeyID = 0;
 
 		[Tooltip("The value associated with the key")]
 		public string KeyValue = "";
