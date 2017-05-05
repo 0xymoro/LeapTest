@@ -71,14 +71,7 @@ namespace Leap.Unity {
 			}
 		}
 
-/*
-		//unclickable period to have more precise clicking
-		void OnCollisionExit(Collision other){
-			if (KeyID == controller.getActiveID()){
-				StartCoroutine(DeactivateAfterDelay());
-			}
-		}
-*/
+
 		IEnumerator DeactivateAfterDelay(){
 			yield return new WaitForSeconds(KeyDelay);
 			controller.deactivate();
