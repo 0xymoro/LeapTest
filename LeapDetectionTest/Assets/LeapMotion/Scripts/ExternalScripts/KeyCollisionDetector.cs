@@ -6,8 +6,6 @@ using Leap.Unity.Attributes;
 namespace Leap.Unity {
 
 	public class KeyCollisionDetector : MonoBehaviour {
-		// [Tooltip("Key's ID")]
-		// public int KeyID = 0;
 
 		[Tooltip("The value associated with the key")]
 		public string KeyValue = "";
@@ -27,11 +25,19 @@ namespace Leap.Unity {
 
 		private KeyCollisionDetectorController controller;
 
+		//for animating keys
+		private Animation animation;
+
+		private AudioClip clip;
+		private AudioSource audioSource;
 
 
 		void Awake (){
 			//BE VERY SPECIFIC WITH THE PATH HERE!!!
 			controller = GameObject.Find("/KeysController").GetComponent<KeyCollisionDetectorController>();
+			animation = GetComponentInParent<Animation>();
+			audioSource = GameObject.Find("/KeysController").GetComponent<AudioSource>();
+			clip = audioSource.clip;
 		}
 
 		// Use this for initialization
@@ -43,6 +49,7 @@ namespace Leap.Unity {
 		void Update () {
 
 		}
+
 
 		private bool IsHand(Collider other)
 		{
@@ -65,9 +72,11 @@ namespace Leap.Unity {
 			Collider collisionObject = other.gameObject.GetComponent<Collider>();
 			if (IsHand(collisionObject) && IsFingerTip(collisionObject) &&
 			    !controller.getActive()){
-				registerKey();
-				controller.activate();
-				StartCoroutine(DeactivateAfterDelay());
+				registerKey(); //avoid multiple clicks
+				controller.activate(); //refractory period for key
+				animation.Play(); //animation
+				audioSource.PlayOneShot(clip, 0.7F); //play sound
+				StartCoroutine(DeactivateAfterDelay()); //make key clickable after delay
 			}
 		}
 
