@@ -60,7 +60,7 @@ namespace Leap.Unity {
 				}
 			}
 			else{
-/*
+
 				if(KeyValue == " "){
 					String[] spl= OutputTextMesh.text.Split(' '); //splits output string by spaces
 					OutputTextMesh.text = OutputTextMesh.text.Substring(0, OutputTextMesh.text.Length - spl[spl.Length - 1].Length); //eliminates last word
@@ -68,9 +68,8 @@ namespace Leap.Unity {
 					OutputTextMesh.text += spelling.Correct(spl[spl.Length - 1]); //adds in corrected last word
 					OutputTextMesh.text += KeyValue; //add in space
 				}else{
-				*/
 				OutputTextMesh.text += KeyValue;
-				//}
+				}
 
 			}
 			textLength ++;
@@ -99,24 +98,61 @@ namespace SpellingCorrector
 	/// </summary>
 	public class Spelling
 	{
-		private Dictionary<String, int> _dictionary = new Dictionary<String, int>();
+		//private Dictionary<string, double> _bigrams = new Dictionary<string, double>();
+		private Dictionary<string, double> _unigrams = new Dictionary<string, double>();
 		private static Regex _wordRegex = new Regex("[a-z]+", RegexOptions.Compiled);
+		private Dictionary<string, double> _transProb = new Dictionary<string, double>();
 
 		public Spelling()
 		{
-			string fileContent = File.ReadAllText("assets/big.txt");
+			string fileContent = File.ReadAllText("Assets/big.txt");
+			string transProbText = File.ReadAllText("Assets/count_1edit.txt");
 			List<string> wordList = fileContent.Split(new string[] {"\n"} , StringSplitOptions.RemoveEmptyEntries).ToList();
+			List<string> transProbList = transProbText.Split(new string[] {"\n"} , StringSplitOptions.RemoveEmptyEntries).ToList();
 
-			foreach (var word in wordList)
+			//CONSTRUCT UNIGRAM & BIGRAM
+			for (int k = 0; k < wordList.Count(); k++)
 			{
-				string trimmedWord = word.Trim().ToLower();
-				if (_wordRegex.IsMatch(trimmedWord))
+				List<string> vocabs = wordList[k].Split(new string[] {" "}, StringSplitOptions.RemoveEmptyEntries).ToList();
+				for (int i = 0; i < vocabs.Count(); i++)
 				{
-					if (_dictionary.ContainsKey(trimmedWord))
-						_dictionary[trimmedWord]++;
-					else
-						_dictionary.Add(trimmedWord, 1);
+					string trimmedWord = vocabs[i].Trim().ToLower();
+					//defines unigram prob dictionary
+					if (_wordRegex.IsMatch(trimmedWord))
+					{
+						//ADD TO UNIGRAM
+						if (_unigrams.ContainsKey(trimmedWord))
+						{
+							_unigrams[trimmedWord] += 1.00/wordList.Count; //keeps it probability
+						}
+						else
+						{
+							_unigrams.Add(trimmedWord, 1.00/wordList.Count);
+						}
+					}
 				}
+			}
+            Debug.Log("number of keys in unigram is " + _unigrams.Keys.Count.ToString());
+
+			//CONSTRUCT TRANSITION PROB
+			double transProbSum = 0;
+			foreach (var trans in transProbList)
+			{
+				//split each line of transprob into transition and its probability
+				string[] entry = trans.Split(new string[] {" ", "	"} , StringSplitOptions.RemoveEmptyEntries);
+
+				//if parse was successful, add it to _transProb
+				int number;
+				if(!_transProb.ContainsKey(entry[0]) && int.TryParse(entry[1], out number))
+				{
+					transProbSum += Convert.ToInt32(entry[1]);
+					_transProb.Add(entry[0], Convert.ToInt32(entry[1]));
+				}
+			}
+			List<string> keys = new List<string> (_transProb.Keys);
+			foreach (var trans in keys)
+			{
+				_transProb[trans] /= transProbSum;
 			}
 		}
 
@@ -127,42 +163,59 @@ namespace SpellingCorrector
 
 			word = word.ToLower();
 
-			// known()
-			if (_dictionary.ContainsKey(word))
+			if (_unigrams.ContainsKey(word))
 				return word;
 
-			List<String> list = Edits(word);
-			Dictionary<string, int> candidates = new Dictionary<string, int>();
+			List<Tuple<string, string>> list = Edits(word);
+			Dictionary<string, double> candidates = new Dictionary<string, double>(); //Organized as alternative -> score
 
-			foreach (string wordVariation in list)
+			foreach (Tuple<string, string> pair in list)
 			{
-				if (_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
-					candidates.Add(wordVariation, _dictionary[wordVariation]);
-			}
+				string wordVariation = pair.Item1;
+				string trans = pair.Item2;
 
-			if (candidates.Count > 0)
-				return candidates.OrderByDescending(x => x.Value).First().Key;
-
-			// known_edits2()
-			foreach (string item in list)
-			{
-				foreach (string wordVariation in Edits(item))
+				//wordVariation already in candidate
+				if(candidates.ContainsKey(wordVariation))
 				{
-					if (_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
-						candidates.Add(wordVariation, _dictionary[wordVariation]);
+					continue;
+				}
+
+				//this wordVariation is not in the dictionary or transprob is not in dictionary
+				if (!_unigrams.ContainsKey(wordVariation) || !_transProb.ContainsKey(trans))
+				{
+					candidates.Add(wordVariation, 0.0);
+				}
+
+				//this wordVariation EXISTS in the dictionary
+				else
+				{
+					if (!_transProb.ContainsKey(trans)) //this translation itself is very unlikely
+					{
+						candidates.Add(wordVariation, 0.0);
+					}
+					else //entry exists in dict, and transition is likely! calculate score.
+					{
+						candidates.Add(wordVariation, _transProb[trans]*_unigrams[wordVariation]);
+					}
 				}
 			}
 
-			return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).First().Key : word;
+			string result = (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).First().Key : word;
+
+			Debug.Log("Result is " + result);
+			return result;
 		}
 
-		private List<string> Edits(string word)
+
+		//EDIT MODELS
+		//EACH ENTRY: (transition pattern, result)
+		private List<Tuple<string, string>> Edits(string word)
 		{
 			var splits = new List<Tuple<string, string>>();
-			var transposes = new List<string>();
-			var deletes = new List<string>();
-			var replaces = new List<string>();
-			var inserts = new List<string>();
+			var transposes = new List<Tuple<string, string>>();
+			var deletes = new List<Tuple<string, string>>();
+			var replaces = new List<Tuple<string, string>>();
+			var inserts = new List<Tuple<string, string>>();
 
 			// Splits
 			for (int i = 0; i < word.Length; i++)
@@ -178,7 +231,14 @@ namespace SpellingCorrector
 				string b = splits[i].Item2;
 				if (!string.IsNullOrEmpty(b))
 				{
-					deletes.Add(a + b.Substring(1));
+					string last = ">";
+					if (a.Length > 0)
+					{
+						last = a.Last().ToString();
+					}
+					var pair = new Tuple<string,string>(a + b.Substring(1),
+						last +b[0] + "|" + last);
+					deletes.Add(pair);
 				}
 			}
 
@@ -189,7 +249,9 @@ namespace SpellingCorrector
 				string b = splits[i].Item2;
 				if (b.Length > 1)
 				{
-					transposes.Add(a + b[1] + b[0] + b.Substring(2));
+					var pair = new Tuple<string,string>(a + b[1] + b[0] + b.Substring(2),
+					 b[0] + b[1] + "|" + b[1] + b[0]);
+					transposes.Add(pair);
 				}
 			}
 
@@ -202,7 +264,9 @@ namespace SpellingCorrector
 				{
 					for (char c = 'a'; c <= 'z'; c++)
 					{
-						replaces.Add(a + c + b.Substring(1));
+						var pair = new Tuple<string,string>(a + c + b.Substring(1),
+						 b.Substring(0) +"|" + c);
+						replaces.Add(pair);
 					}
 				}
 			}
@@ -214,31 +278,39 @@ namespace SpellingCorrector
 				string b = splits[i].Item2;
 				for (char c = 'a'; c <= 'z'; c++)
 				{
-					inserts.Add(a + c + b);
+					string last = ">";
+					if (a.Length > 0)
+					{
+						last = a.Last().ToString();
+					}
+					var pair = new Tuple<string,string>(a + c + b,
+						last + "|" + last + c);
+					inserts.Add(pair);
 				}
 			}
 
 			return deletes.Union(transposes).Union(replaces).Union(inserts).ToList();
 		}
+
 	}
+}
 
-	public class Tuple<T,U>
+public class Tuple<T,U>
+{
+	public T Item1 { get; private set; }
+	public U Item2 { get; private set; }
+
+	public Tuple(T item1, U item2)
 	{
-		public T Item1 { get; private set; }
-		public U Item2 { get; private set; }
-
-		public Tuple(T item1, U item2)
-		{
-			Item1 = item1;
-			Item2 = item2;
-		}
+		Item1 = item1;
+		Item2 = item2;
 	}
+}
 
-	public static class Tuple
+public static class Tuple
+{
+	public static Tuple<T, U> Create<T, U>(T item1, U item2)
 	{
-		public static Tuple<T, U> Create<T, U>(T item1, U item2)
-		{
-			return new Tuple<T, U>(item1, item2);
-		}
+		return new Tuple<T, U>(item1, item2);
 	}
 }

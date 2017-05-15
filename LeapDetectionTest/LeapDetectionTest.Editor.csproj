@@ -162,6 +162,7 @@
     <None Include="Assets\LeapMotionModules\DetectionExamples\Shaders\LeapPinchLine.shader" />
     <None Include="Assets\Plugins\donotdelete.txt" />
     <None Include="Assets\big.txt" />
+    <None Include="Assets\count_1edit.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
