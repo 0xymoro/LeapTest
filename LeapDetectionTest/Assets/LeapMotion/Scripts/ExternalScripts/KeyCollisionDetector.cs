@@ -21,6 +21,7 @@ namespace Leap.Unity {
 		public bool isShiftKey = false;
 		public bool isEnterKey = false;
 		public bool isDeleteKey = false;
+		public bool isSwapKey = false;
 
 
 		private KeyCollisionDetectorController controller;
@@ -101,6 +102,9 @@ namespace Leap.Unity {
 			}
 			else if (isDeleteKey){
 				controller.deleteKey();
+			}
+			else if (isSwapKey){
+				controller.swap();
 			}
 		}
 

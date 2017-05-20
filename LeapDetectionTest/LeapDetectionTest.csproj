@@ -111,6 +111,7 @@
     <Compile Include="Assets\LeapMotion\Scripts\DetectionUtilities\ProximityDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\ExternalScripts\KeyCollisionDetector.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\ExternalScripts\KeyCollisionDetectorController.cs" />
+    <Compile Include="Assets\LeapMotion\Scripts\ExternalScripts\KeySwapper.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\HandFactory.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\HandPool.cs" />
     <Compile Include="Assets\LeapMotion\Scripts\HandProxy.cs" />
