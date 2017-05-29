@@ -101,7 +101,7 @@ namespace Leap.Unity {
 			else{
 
 				if(KeyValue == " "){
-					String[] spl= OutputTextMesh.text.Split(' '); //splits output string by spaces
+					String[] spl= OutputTextMesh.text.Split(new char[] {' ', '\n'}); //splits output string by spaces
 					OutputTextMesh.text = OutputTextMesh.text.Substring(0, OutputTextMesh.text.Length - spl[spl.Length - 1].Length); //eliminates last word
                                                                                                                                      //Debug.Log(OutputTextMesh.text);
                     string lastWord = ">";
